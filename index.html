@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>مساعد ذكي - حاسبات وشات</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,31 +21,20 @@
   }
   #main {
     display: flex;
-    flex-direction: column;
     height: calc(100vh - 60px);
   }
-  @media (min-width: 768px) {
-    #main {
-      flex-direction: row;
-    }
-  }
   #sidebar {
-    width: 100%;
+    width: 260px;
     background: #222;
     padding: 15px;
     box-sizing: border-box;
     border-left: 3px solid #00bfa5;
   }
-  @media (min-width: 768px) {
-    #sidebar {
-      width: 260px;
-    }
-  }
   #sidebar h2 {
     text-align: center;
     margin-bottom: 20px;
   }
-  #sidebar button, #langSelect {
+  #sidebar button {
     width: 100%;
     margin: 10px 0;
     padding: 12px;
@@ -62,169 +50,36 @@
   #sidebar button:hover {
     background: #008f7a;
   }
-  #content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background: #222;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-  }
-  #calculator, #chatbox {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-  }
-  #calculator.active, #chatbox.active {
-    display: flex;
-  }
-  #calcTitle {
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-  #calcForm label {
-    display: block;
-    margin: 12px 0 6px;
-  }
-  #calcForm input, #calcForm select {
+  iframe {
+    border: none;
     width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
-    box-sizing: border-box;
-  }
-  #calcForm button {
-    margin-top: 15px;
-    padding: 12px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 10px;
-    background: #00bfa5;
-    color: #000;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  #calcForm button:hover {
-    background: #008f7a;
-  }
-  #calcResult {
-    margin-top: 20px;
-    background: #333;
-    padding: 15px;
-    border-radius: 10px;
-    white-space: pre-line;
-  }
-  #chartContainer {
-    margin-top: 20px;
-  }
-  canvas {
-    background: #fff;
-    border-radius: 10px;
+    height: calc(100vh - 60px);
   }
 </style>
 </head>
 <body>
+
 <header>🤖 مساعد ذكي - حاسبات وشات</header>
+
 <div id="main">
   <nav id="sidebar">
     <h2>الأقسام</h2>
-    <select id="langSelect" onchange="changeLanguage()">
-      <option value="ar">🇸🇦 العربية</option>
-      <option value="en">🇺🇸 English</option>
-    </select>
-    <button onclick="showCalculator('مالية')">💰 حاسبة مالية</button>
-    <button onclick="showCalculator('وظيفة')">💼 حاسبة وظيفة</button>
-    <button onclick="showCalculator('مشاريع')">📈 حاسبة مشاريع</button>
-    <button onclick="showCalculator('إدارة أعمال')">📊 حاسبة إدارة أعمال</button>
-    <button onclick="showCalculator('توفير')">💡 حاسبة توفير</button>
-    <button onclick="showCalculator('استثمار')">📉 حاسبة استثمار</button>
-    <button onclick="showChat()">💬 شات ذكي</button>
+    <button onclick="openPage('calc.html?type=مالية')">💰 حاسبة مالية</button>
+    <button onclick="openPage('calc.html?type=وظيفة')">💼 حاسبة وظيفة</button>
+    <button onclick="openPage('calc.html?type=مشاريع')">📈 حاسبة مشاريع</button>
+    <button onclick="openPage('calc.html?type=إدارة أعمال')">📊 حاسبة إدارة أعمال</button>
+    <button onclick="openPage('calc.html?type=توفير')">💡 حاسبة توفير</button>
+    <button onclick="openPage('calc.html?type=استثمار')">📉 حاسبة استثمار</button>
+    <button onclick="openPage('chat.html')">💬 شات ذكي</button>
   </nav>
-  <section id="content">
-    <div id="calculator">
-      <div id="calcTitle"></div>
-      <form id="calcForm"></form>
-      <div id="calcResult"></div>
-      <div id="chartContainer"><canvas id="financeChart"></canvas></div>
-    </div>
-    <div id="chatbox">
-      <div id="chatDisplay" style="flex:1;overflow:auto;background:#111;padding:15px;border-radius:10px;margin-bottom:10px"></div>
-      <div style="display:flex">
-        <input type="text" id="chatInput" placeholder="اكتب مشكلتك هنا..." style="flex:1;padding:10px;border-radius:8px;background:#333;color:#eee;border:none" />
-        <button onclick="sendChatMessage()">إرسال</button>
-      </div>
-    </div>
-  </section>
+  <iframe id="contentFrame" src="" allowfullscreen></iframe>
 </div>
+
 <script>
-let selectedLang = 'ar';
-function changeLanguage() {
-  selectedLang = document.getElementById('langSelect').value;
-  alert('سيتم دعم الترجمة الكاملة لاحقًا بإذن الله 🌐');
-}
-function showCalculator(type) {
-  document.getElementById('calculator').classList.add('active');
-  document.getElementById('chatbox').classList.remove('active');
-  document.getElementById('calcForm').innerHTML = '';
-  document.getElementById('calcResult').innerText = '';
-  document.getElementById('financeChart').style.display = type === 'مالية' ? 'block' : 'none';
-  document.getElementById('calcTitle').innerText = type;
-  if (type === 'مالية') {
-    const form = document.getElementById('calcForm');
-    form.innerHTML = `
-      <label>الدخل</label><input id="income" type="number">
-      <label>المصاريف</label><input id="expenses" type="number">
-      <button type="button" onclick="calculateFinance()">احسب</button>
-    `;
-  }
-}
-function calculateFinance() {
-  const income = parseFloat(document.getElementById('income').value);
-  const expenses = parseFloat(document.getElementById('expenses').value);
-  const savings = income - expenses;
-  document.getElementById('calcResult').innerText = `الدخل: ${income} - المصاريف: ${expenses} = ${savings}`;
-  const ctx = document.getElementById('financeChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['المصاريف', 'المدخرات'],
-      datasets: [{
-        data: [expenses, savings],
-        backgroundColor: ['#e91e63', '#4caf50']
-      }]
-    },
-    options: {responsive: true}
-  });
-  localStorage.setItem('lastResult', JSON.stringify({income, expenses}));
-}
-function showChat() {
-  document.getElementById('calculator').classList.remove('active');
-  document.getElementById('chatbox').classList.add('active');
-  document.getElementById('chatDisplay').innerHTML = '<div>مرحبًا! أخبرني عن مشكلتك.</div>';
-}
-function sendChatMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  if (!message) return;
-  const reply = smartReply(message);
-  const chatDisplay = document.getElementById('chatDisplay');
-  chatDisplay.innerHTML += `<div class='chat-msg user'>${message}</div>`;
-  chatDisplay.innerHTML += `<div class='chat-msg bot'>${reply}</div>`;
-  input.value = '';
-  chatDisplay.scrollTop = chatDisplay.scrollHeight;
-}
-function smartReply(msg) {
-  msg = msg.toLowerCase();
-  if (msg.includes('سيارة') && msg.includes('فلوس')) return 'أنصحك بوضع خطة ادخار وتقسيط تتماشى مع دخلك.';
-  if (msg.includes('راتبي') && msg.includes('ما يكفي')) return 'حاول تقليل المصاريف الأساسية وتجنب الكماليات.';
-  if (msg.includes('مشروع') && msg.includes('ما عندي راس مال')) return 'ابدأ بمشروع بسيط لا يحتاج رأس مال كبير مثل الخدمات الرقمية.';
-  return 'فهمت سؤالك. هل يمكنك توضيح التفاصيل أكثر؟';
+function openPage(url) {
+  document.getElementById('contentFrame').src = url;
 }
 </script>
+
 </body>
 </html>
