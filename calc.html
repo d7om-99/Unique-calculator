@@ -1,0 +1,90 @@
+<!-- ملف: calc.html -->
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حاسبة ذكية</title>
+  <style>
+    body { font-family: sans-serif; background: #1d1d1d; color: #eee; margin: 0; padding: 20px; direction: rtl; }
+    header { background: #009688; padding: 15px; font-size: 1.4rem; font-weight: bold; text-align: center; }
+    .container { max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 10px; border-radius: 6px; margin-top: 5px; border: none; }
+    button { padding: 12px; margin-top: 20px; background: #00bfa5; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    #result { margin-top: 20px; background: #333; padding: 15px; border-radius: 10px; white-space: pre-line; }
+    .back-btn { margin-top: 20px; display: inline-block; color: #00bfa5; cursor: pointer; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header id="calcTitle">حاسبة</header>
+  <div class="container">
+    <form id="calcForm"></form>
+    <div id="result"></div>
+    <div class="back-btn" onclick="goBack()">⬅ العودة للرئيسية</div>
+  </div>
+
+  <script>
+    const calculators = {
+      "مالية": {
+        title: "حاسبة مالية",
+        fields: [
+          { label: "الدخل الشهري", id: "income", type: "number" },
+          { label: "المصاريف الشهرية", id: "expenses", type: "number" },
+          { label: "هل لديك ديون؟", id: "debts", type: "select", options: ["نعم", "لا"] },
+          { label: "هل تحاول الادخار؟", id: "saving", type: "select", options: ["نعم", "لا"] }
+        ],
+        calculate: function (vals) {
+          const income = +vals.income;
+          const expenses = +vals.expenses;
+          const balance = income - expenses;
+          let r = `رصيدك: ${balance} ريال\n`;
+          if (balance < 0) r += "⚠️ أنت تعاني من عجز!\n";
+          if (vals.debts === "نعم") r += "ركز على سداد ديونك أولاً.\n";
+          if (vals.saving === "لا") r += "ابدأ بالتوفير ولو قليلًا.";
+          return r;
+        }
+      },
+      // أضف باقي الحاسبات هنا بنفس الطريقة إذا رغبت
+    };
+
+    function renderCalculator(type) {
+      const data = calculators[type];
+      if (!data) return;
+
+      document.getElementById('calcTitle').textContent = data.title;
+      const form = document.getElementById('calcForm');
+      form.innerHTML = "";
+      data.fields.forEach(f => {
+        let html = `<label for="${f.id}">${f.label}</label>`;
+        if (f.type === 'select') {
+          html += `<select id="${f.id}">${f.options.map(o => `<option value="${o}">${o}</option>`)}</select>`;
+        } else {
+          html += `<input type="${f.type}" id="${f.id}" />`;
+        }
+        form.insertAdjacentHTML('beforeend', html);
+      });
+      form.insertAdjacentHTML('beforeend', '<button type="submit">احسب</button>');
+      form.onsubmit = e => {
+        e.preventDefault();
+        const values = {};
+        data.fields.forEach(f => values[f.id] = document.getElementById(f.id).value);
+        const result = data.calculate(values);
+        document.getElementById('result').textContent = result;
+      };
+    }
+
+    function getParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function goBack() {
+      window.parent.location.reload();
+    }
+
+    const type = getParam('type');
+    if (type) renderCalculator(type);
+  </script>
+</body>
+</html>
