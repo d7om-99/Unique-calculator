@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>شات ذكي</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0; padding: 20px;
+    direction: rtl;
+  }
+  #backBtn {
+    background: #009688;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  #chatBox {
+    border: 1px solid #444;
+    height: 350px;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 10px;
+    background: #222;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+  }
+  #userInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background: #222;
+    color: #eee;
+  }
+  #sendBtn {
+    background: #00bfa5;
+    border: none;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #000;
+    margin-top: 10px;
+    float: right;
+    transition: background 0.3s ease;
+  }
+  #sendBtn:hover {
+    background: #008f7a;
+  }
+</style>
+</head>
+<body>
+
+<button id="backBtn" onclick="goBack()">⬅ العودة</button>
+
+<h2>شات ذكي</h2>
+
+<div id="chatBox"></div>
+
+<input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." />
+<button id="sendBtn">أرسل</button>
+
+<script>
+const chatBox = document.getElementById('chatBox');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function appendMessage(sender, text) {
+  const div = document.createElement('div');
+  div.style.margin = '8px 0';
+  div.style.whiteSpace = 'pre-wrap';
+  if(sender === 'user') {
+    div.style.textAlign = 'right';
+    div.style.color = '#00ff99';
+    div.textContent = "أنت: " + text;
+  } else {
+    div.style.textAlign = 'left';
+    div.style.color = '#00bfa5';
+    div.textContent = "المساعد: " + text;
+  }
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// استجابات بسيطة للتجربة
+function getResponse(text) {
+  text = text.toLowerCase();
+  if(text.includes('مرحبا') || text.includes('السلام')) {
+    return "أهلاً! كيف يمكنني مساعدتك اليوم؟";
+  }
+  if(text.includes('حاسبة')) {
+    return "يمكنك اختيار الحاسبة من القائمة الرئيسية.";
+  }
+  if(text.includes('شكراً') || text.includes('شكرًا')) {
+    return "على الرحب والسعة!";
+  }
+  return "آسف، لم أفهم طلبك جيداً. هل يمكنك إعادة صياغته؟";
+}
+
+function sendMessage() {
+  const text = userInput.value.trim();
+  if(!text) return;
+  appendMessage('user', text);
+  userInput.value = '';
+  setTimeout(() => {
+    const response = getResponse(text);
+    appendMessage('bot', response);
+  }, 700);
+}
+
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter') sendMessage();
+});
+
+// زر العودة
+function goBack() {
+  window.parent.document.getElementById('contentFrame').src = '';
+}
+</script>
+
+</body>
+</html>
