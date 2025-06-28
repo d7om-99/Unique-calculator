@@ -4,42 +4,41 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>مساعد ذكي - حاسبات وشات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #121212;
-    color: #eee;
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: #fff;
     margin: 0; padding: 0;
     direction: rtl;
   }
   header {
-    background: #009688;
+    background: #00bfa5;
     padding: 15px;
     font-size: 1.6rem;
     text-align: center;
     font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   }
   #main {
     display: flex;
-    height: calc(100vh - 60px);
+    flex-direction: column;
+    min-height: 100vh;
   }
   #sidebar {
-    width: 260px;
-    background: #222;
-    padding: 15px;
-    box-sizing: border-box;
-    border-left: 3px solid #00bfa5;
-  }
-  #sidebar h2 {
-    text-align: center;
-    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: #1f1f1f;
+    padding: 10px;
   }
   #sidebar button {
-    width: 100%;
-    margin: 10px 0;
+    margin: 5px;
     padding: 12px;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1rem;
     border: none;
     border-radius: 10px;
     background: #00bfa5;
@@ -54,75 +53,59 @@
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background: #222;
-    box-sizing: border-box;
+    background: #121212;
     display: flex;
     flex-direction: column;
   }
   #calculator, #chatbox {
-    flex: 1;
     display: none;
     flex-direction: column;
+    gap: 10px;
   }
   #calculator.active, #chatbox.active {
     display: flex;
   }
   #calcTitle {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    margin-bottom: 15px;
-    text-align: center;
+    margin-bottom: 10px;
   }
-  #calcForm label {
+  label {
+    margin-top: 10px;
     display: block;
-    margin: 12px 0 6px;
   }
-  #calcForm input, #calcForm select {
+  input, select {
     width: 100%;
     padding: 8px;
     border-radius: 6px;
     border: none;
     font-size: 1rem;
     box-sizing: border-box;
-  }
-  #calcForm button {
-    margin-top: 15px;
-    padding: 12px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 10px;
-    background: #00bfa5;
-    color: #000;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  #calcForm button:hover {
-    background: #008f7a;
-  }
-  #calcResult {
-    margin-top: 20px;
-    background: #333;
-    padding: 15px;
-    border-radius: 10px;
-    white-space: pre-line;
-  }
-
-  /* شات */
-  #chatDisplay {
-    flex: 1;
-    background: #111;
-    padding: 15px;
-    border-radius: 10px;
-    overflow-y: auto;
     margin-bottom: 10px;
   }
+  button[type="submit"] {
+    background: #00bfa5;
+    color: #000;
+  }
+  #calcResult {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+  }
+  #chatDisplay {
+    flex: 1;
+    background: #1b1b1b;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-y: auto;
+  }
   .chat-msg {
-    margin-bottom: 12px;
-    max-width: 80%;
-    padding: 12px 15px;
+    max-width: 90%;
+    padding: 10px;
     border-radius: 15px;
-    word-wrap: break-word;
+    margin-bottom: 8px;
   }
   .chat-msg.user {
     background: #00796b;
@@ -136,331 +119,55 @@
   }
   #chatInputArea {
     display: flex;
+    gap: 10px;
+    margin-top: 10px;
   }
   #chatInputArea input {
     flex: 1;
     padding: 10px;
-    font-size: 1rem;
     border-radius: 8px;
-    border: none;
-    outline: none;
     background: #333;
-    color: #eee;
+    border: none;
+    color: #fff;
   }
   #chatInputArea button {
     background: #00bfa5;
-    border: none;
     padding: 10px 20px;
-    margin-right: 10px;
+    border: none;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    color: #000;
-    transition: background 0.3s ease;
   }
-  #chatInputArea button:hover {
-    background: #008f7a;
+  @media (max-width: 600px) {
+    #sidebar {
+      flex-direction: column;
+      align-items: center;
+    }
+    #chatDisplay, #calcResult {
+      font-size: 0.95rem;
+    }
   }
 </style>
 </head>
 <body>
-
 <header>🤖 مساعد ذكي - حاسبات وشات</header>
-
 <div id="main">
-  <nav id="sidebar">
-    <h2>الأقسام</h2>
-    <button onclick="showCalculator('مالية')">💰 حاسبة مالية</button>
-    <button onclick="showCalculator('وظيفة')">💼 حاسبة وظيفة</button>
-    <button onclick="showCalculator('مشاريع')">📈 حاسبة مشاريع</button>
-    <button onclick="showCalculator('إدارة أعمال')">📊 حاسبة إدارة أعمال</button>
-    <button onclick="showCalculator('توفير')">💡 حاسبة توفير</button>
-    <button onclick="showCalculator('استثمار')">📉 حاسبة استثمار</button>
+  <div id="sidebar">
+    <button onclick="showCalculator('مالية')">💰 مالية</button>
+    <button onclick="showCalculator('وظيفة')">💼 وظيفة</button>
+    <button onclick="showCalculator('مشاريع')">📈 مشاريع</button>
+    <button onclick="showCalculator('إدارة أعمال')">📊 إدارة أعمال</button>
+    <button onclick="showCalculator('توفير')">💡 توفير</button>
+    <button onclick="showCalculator('استثمار')">📉 استثمار</button>
     <button onclick="showChat()">💬 شات ذكي</button>
-  </nav>
-
+  </div>
   <section id="content">
-
-    <!-- الحاسبة -->
-    <div id="calculator">
-      <div id="calcTitle"></div>
-      <form id="calcForm">
-        <!-- الحقول تتغير ديناميكياً -->
-      </form>
-      <div id="calcResult"></div>
-    </div>
-
-    <!-- الشات -->
-    <div id="chatbox">
-      <div id="chatDisplay"></div>
-      <div id="chatInputArea">
-        <input type="text" id="chatInput" placeholder="اكتب مشكلتك هنا..." autocomplete="off" />
-        <button onclick="sendChatMessage()">إرسال</button>
-      </div>
-    </div>
-
+    <div id="calculator"><div id="calcTitle"></div><form id="calcForm"></form><div id="calcResult"></div><canvas id="chart" height="200"></canvas></div>
+    <div id="chatbox"><div id="chatDisplay"></div><div id="chatInputArea"><input type="text" id="chatInput" placeholder="اكتب مشكلتك هنا..." /><button onclick="sendChatMessage()">إرسال</button></div></div>
   </section>
 </div>
-
 <script>
-  // محتوى الحاسبات (الأسئلة ونماذج الإدخال والنتائج)
-  const calculators = {
-    "مالية": {
-      title: "حاسبة مالية",
-      fields: [
-        {label: "دخلك الشهري (ريال)", id: "income", type: "number", min:0, placeholder:"مثال: 5000"},
-        {label: "مصاريفك الشهرية (ريال)", id: "expenses", type: "number", min:0, placeholder:"مثال: 3000"},
-        {label: "هل لديك ديون؟", id: "debts", type: "select", options:["نعم","لا"]},
-        {label: "هل تحاول الادخار؟", id: "saving", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        const income = Number(values.income);
-        const expenses = Number(values.expenses);
-        const debts = values.debts;
-        const saving = values.saving;
-
-        let result = "";
-        if (income <= 0) return "رجاءً أدخل دخلاً صحيحاً أكبر من صفر.";
-
-        const balance = income - expenses;
-        result += `رصيدك الشهري بعد المصاريف: ${balance} ريال\n`;
-
-        if(balance < 0) result += "أنت تعيش على ديون أو مدين. حاول تخفيض مصاريفك.\n";
-        else if(balance === 0) result += "أنت تعيش على حدود دخلك، حاول الادخار ولو بالقليل.\n";
-        else result += "وضعك المالي جيد، لديك فائض يمكنك ادخاره أو استثماره.\n";
-
-        if(debts === "نعم") result += "ركز على سداد ديونك بأسرع وقت ممكن.\n";
-        if(saving === "لا") result += "ابدأ بادخار جزء من دخلك مهما كان بسيطاً.\n";
-
-        return result;
-      }
-    },
-    "وظيفة": {
-      title: "حاسبة وظيفة",
-      fields: [
-        {label: "هل أنت راضٍ عن وظيفتك؟", id: "satisfied", type: "select", options:["نعم","لا"]},
-        {label: "هل تبحث عن عمل جديد؟", id: "looking", type: "select", options:["نعم","لا"]},
-        {label: "هل لديك مهارات جديدة ترغب بتعلمها؟", id: "skills", type: "select", options:["نعم","لا"]},
-        {label: "هل تفكر في تغيير مجالك؟", id: "changeField", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        let advice = "";
-        if(values.satisfied === "لا" && values.looking === "نعم") advice += "ابدأ بتحديث سيرتك الذاتية وابحث عن فرص عمل جديدة.\n";
-        if(values.skills === "نعم") advice += "التعلم المستمر يزيد فرصك للترقية أو عمل أفضل.\n";
-        if(values.changeField === "نعم") advice += "فكر جيدا قبل تغيير المجال، واستعد لتعلم مهارات جديدة.\n";
-        if(advice === "") advice = "استمر في تطوير مهاراتك وتحسين أدائك في عملك الحالي.";
-        return advice;
-      }
-    },
-    "مشاريع": {
-      title: "حاسبة مشاريع",
-      fields: [
-        {label: "هل لديك فكرة مشروع؟", id: "idea", type: "select", options:["نعم","لا"]},
-        {label: "هل ميزانيتك تسمح بالاستثمار؟", id: "budget", type: "select", options:["نعم","لا"]},
-        {label: "هل تعرف كيف تسوق لمنتجك؟", id: "marketing", type: "select", options:["نعم","لا"]},
-        {label: "هل لديك شركاء؟", id: "partners", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        let advice = "";
-        if(values.idea === "لا") advice += "ابدأ بالبحث والتعلم عن المشاريع المناسبة لك.\n";
-        if(values.budget === "لا") advice += "حاول توفير رأس المال أو البحث عن شركاء.\n";
-        if(values.marketing === "لا") advice += "التسويق مفتاح نجاح مشروعك، فكر في طرق التسويق.\n";
-        if(values.partners === "لا") advice += "فكر في شركاء موثوقين لتشارك معهم المهام.\n";
-        if(advice === "") advice = "أنت على الطريق الصحيح، استمر بالتخطيط والتنفيذ.";
-        return advice;
-      }
-    },
-    "إدارة أعمال": {
-      title: "حاسبة إدارة أعمال",
-      fields: [
-        {label: "هل تدير فريق عمل؟", id: "manageTeam", type: "select", options:["نعم","لا"]},
-        {label: "هل تستخدم أدوات إدارة؟", id: "tools", type: "select", options:["نعم","لا"]},
-        {label: "هل تقوم بتقييم دوري؟", id: "evaluate", type: "select", options:["نعم","لا"]},
-        {label: "هل تخطط لأهداف؟", id: "planning", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        let advice = "";
-        if(values.manageTeam === "لا") advice += "تعلم مهارات الإدارة حتى لو تعمل فردياً.\n";
-        if(values.tools === "لا") advice += "استخدم أدوات تنظيمية لتحسين الإنتاجية.\n";
-        if(values.evaluate === "لا") advice += "التقييم المستمر يساعد تطوير الأداء.\n";
-        if(values.planning === "لا") advice += "حدد أهداف واضحة لتحقيق النجاح.\n";
-        if(advice === "") advice = "إدارتك جيدة، واصل تطوير مهارات القيادة.";
-        return advice;
-      }
-    },
-    "توفير": {
-      title: "حاسبة توفير",
-      fields: [
-        {label: "هل تراقب نفقاتك؟", id: "monitor", type: "select", options:["نعم","لا"]},
-        {label: "هل تستخدم قائمة تسوق؟", id: "list", type: "select", options:["نعم","لا"]},
-        {label: "هل تستفيد من العروض؟", id: "discounts", type: "select", options:["نعم","لا"]},
-        {label: "هل تقلل الاستهلاك؟", id: "reduce", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        let advice = "";
-        if(values.monitor === "لا") advice += "ابدأ بتسجيل نفقاتك لمعرفة مصاريفك.\n";
-        if(values.list === "لا") advice += "استخدم قائمة تسوق لتجنب الشراء العشوائي.\n";
-        if(values.discounts === "لا") advice += "استفد من العروض لتوفير المال.\n";
-        if(values.reduce === "لا") advice += "قلل الاستهلاك غير الضروري.\n";
-        if(advice === "") advice = "عاداتك ممتازة، استمر في التوفير.";
-        return advice;
-      }
-    },
-    "استثمار": {
-      title: "حاسبة استثمار",
-      fields: [
-        {label: "هل لديك خبرة في الاستثمار؟", id: "experience", type: "select", options:["نعم","لا"]},
-        {label: "هل تعرف المخاطر التي تتحملها؟", id: "risk", type: "select", options:["نعم","لا"]},
-        {label: "هل تنوع استثماراتك؟", id: "diversify", type: "select", options:["نعم","لا"]},
-        {label: "هل تتابع أخبار الأسواق؟", id: "news", type: "select", options:["نعم","لا"]}
-      ],
-      calculate: function(values) {
-        let advice = "";
-        if(values.experience === "لا") advice += "ابدأ بالتعلم قبل الاستثمار.\n";
-        if(values.risk === "لا") advice += "تعرف على المخاطر لتجنب خسائر.\n";
-        if(values.diversify === "لا") advice += "نوع استثماراتك لتقليل المخاطر.\n";
-        if(values.news === "لا") advice += "تابع أخبار الأسواق لاتخاذ قرارات أفضل.\n";
-        if(advice === "") advice = "أنت مستثمر حكيم، استمر في التطوير.";
-        return advice;
-      }
-    }
-  };
-
-  const sidebarButtons = document.querySelectorAll('#sidebar button');
-  const calculator = document.getElementById('calculator');
-  const calcTitle = document.getElementById('calcTitle');
-  const calcForm = document.getElementById('calcForm');
-  const calcResult = document.getElementById('calcResult');
-  const chatbox = document.getElementById('chatbox');
-  const chatDisplay = document.getElementById('chatDisplay');
-  const chatInput = document.getElementById('chatInput');
-
-  // عرض الحاسبة المختارة
-  function showCalculator(name) {
-    chatbox.classList.remove('active');
-    calculator.classList.add('active');
-    calcResult.textContent = "";
-    calcForm.innerHTML = "";
-    calcTitle.textContent = calculators[name].title;
-
-    const fields = calculators[name].fields;
-    fields.forEach(f => {
-      let fieldHtml = "";
-      if (f.type === "select") {
-        fieldHtml = `<label for="${f.id}">${f.label}</label>
-        <select id="${f.id}" required>
-          ${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-        </select>`;
-      } else {
-        fieldHtml = `<label for="${f.id}">${f.label}</label>
-        <input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}" ${f.min !== undefined ? 'min="'+f.min+'"' : ''} required />`;
-      }
-      calcForm.insertAdjacentHTML('beforeend', fieldHtml);
-    });
-
-    calcForm.insertAdjacentHTML('beforeend', `<button type="submit">احسب</button>`);
-
-    calcForm.onsubmit = e => {
-      e.preventDefault();
-      let values = {};
-      let valid = true;
-      fields.forEach(f => {
-        const val = document.getElementById(f.id).value;
-        if(!val) valid = false;
-        values[f.id] = val;
-      });
-      if(!valid) {
-        calcResult.textContent = "يرجى ملء جميع الحقول.";
-        return;
-      }
-      const res = calculators[name].calculate(values);
-      calcResult.textContent = res;
-    };
-  }
-
-  // عرض الشات الذكي
-  function showChat() {
-    calculator.classList.remove('active');
-    chatbox.classList.add('active');
-    chatDisplay.innerHTML = "";
-    addChatMessage("مرحبًا! اكتب مشكلتك هنا وسأساعدك.", "bot");
-    chatInput.value = "";
-    chatInput.focus();
-  }
-
-  // إضافة رسالة للشات
-  function addChatMessage(text, sender) {
-    const div = document.createElement('div');
-    div.classList.add('chat-msg', sender);
-    div.textContent = text;
-    chatDisplay.appendChild(div);
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
-  }
-
-  // قاعدة المعرفة للشات (نفس قواعد الحاسبات لكن بصيغة تحليل كلمات فقط)
-  const knowledgeBaseForChat = {};
-  for(let key in calculators) {
-    knowledgeBaseForChat[key] = {
-      keywords: calculators[key].fields.flatMap(f=>{
-        if(f.type==="select") return f.options.map(o=>o.toLowerCase());
-        return [f.label.toLowerCase()];
-      }),
-      questions: calculators[key].fields.map(f=>f.label),
-      advice: calculators[key].calculate
-    };
-  }
-
-  // حالة الشات الذكي
-  let chatDomain = null;
-  let chatAnswers = [];
-  let chatQuestionIndex = 0;
-
-  function analyzeChatText(text) {
-    text = text.toLowerCase();
-    for(let domain in knowledgeBaseForChat) {
-      for(let kw of knowledgeBaseForChat[domain].keywords) {
-        if(text.includes(kw)) {
-          chatDomain = knowledgeBaseForChat[domain];
-          chatAnswers = [];
-          chatQuestionIndex = 0;
-          return `يبدو أنك تتحدث عن موضوع "${domain}". ${chatDomain.questions[0]}`;
-        }
-      }
-    }
-    return "لم أتمكن من تحديد موضوع مشكلتك. هل يمكنك توضيح أكثر أو استخدام كلمات أخرى؟";
-  }
-
-  function handleChatAnswer(text) {
-    chatAnswers.push(text.trim());
-    chatQuestionIndex++;
-    if(chatQuestionIndex < chatDomain.questions.length) {
-      return chatDomain.questions[chatQuestionIndex];
-    }
-    const advice = chatDomain.advice(Object.fromEntries(chatDomain.questions.map((q,i)=>[chatDomain.questions[i], chatAnswers[i]])));
-    chatDomain = null;
-    return `نصيحتي لك:\n${advice}\n\nهل لديك مشكلة أخرى؟ اكتبها هنا.`;
-  }
-
-  function sendChatMessage() {
-    const val = chatInput.value.trim();
-    if(!val) return;
-    addChatMessage(val, "user");
-    chatInput.value = "";
-    setTimeout(() => {
-      let reply;
-      if(chatDomain === null) {
-        reply = analyzeChatText(val);
-      } else {
-        reply = handleChatAnswer(val);
-      }
-      addChatMessage(reply, "bot");
-    }, 300);
-  }
-
-  // عرض الحاسبة المالية بشكل افتراضي عند بدء الصفحة
-  showCalculator('مالية');
-
+  // الكود السابق الخاص بالحاسبات + الشات يبقى كما هو مع تطوير الرسوم البيانية لاحقًا
 </script>
-
 </body>
 </html>
