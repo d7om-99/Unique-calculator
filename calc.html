@@ -1,90 +1,94 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حاسبات ذكية</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #121212;
-    color: #eee;
-    margin: 0; padding: 20px;
-    direction: rtl;
-    min-height: 100vh;
-    box-sizing: border-box;
-  }
-  #backBtn {
-    background: #009688;
-    border: none;
-    color: #000;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
-  h2 {
-    margin-bottom: 20px;
-  }
-  form label {
-    display: block;
-    margin: 10px 0 5px;
-  }
-  form input, form select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
-    box-sizing: border-box;
-    margin-bottom: 15px;
-    background: #222;
-    color: #eee;
-  }
-  form button {
-    background: #00bfa5;
-    border: none;
-    padding: 12px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    color: #000;
-    transition: background 0.3s ease;
-    width: 100%;
-  }
-  form button:hover {
-    background: #008f7a;
-  }
-  #result {
-    background: #222;
-    padding: 15px;
-    border-radius: 10px;
-    white-space: pre-line;
-    min-height: 80px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حاسبة ذكية</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #eee;
+      margin: 0; padding: 20px;
+      direction: rtl;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #00bfa5;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      margin-top: 5px;
+      background: #333;
+      color: #eee;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: #00bfa5;
+      color: #000;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #008f7a;
+    }
+    #result {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #333;
+      border-radius: 10px;
+      white-space: pre-line;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 <body>
 
-<button id="backBtn" onclick="goBack()">⬅ العودة</button>
-<h2 id="title">حاسبة</h2>
+<h1 id="calcTitle">حاسبة ذكية</h1>
 
 <form id="calcForm">
-  <!-- الحقول تظهر هنا ديناميكيًا -->
+  <!-- الحقول تُضاف هنا ديناميكياً -->
   <button type="submit">احسب</button>
 </form>
 
 <div id="result"></div>
 
 <script>
+// قاعدة بيانات الحاسبات
 const calculators = {
   "مالية": {
     title: "حاسبة مالية",
     fields: [
-      {label: "دخلك الشهري (ريال)", id: "income", type: "number", min:0, placeholder:"مثال: 5000"},
-      {label: "مصاريفك الشهرية (ريال)", id: "expenses", type: "number", min:0, placeholder:"مثال: 3000"},
+      {label: "دخل شهري (ريال)", id: "income", type: "number", min:0, placeholder:"مثال: 5000"},
+      {label: "مصاريف شهرية (ريال)", id: "expenses", type: "number", min:0, placeholder:"مثال: 3000"},
       {label: "هل لديك ديون؟", id: "debts", type: "select", options:["نعم","لا"]},
       {label: "هل تحاول الادخار؟", id: "saving", type: "select", options:["نعم","لا"]}
     ],
@@ -94,13 +98,12 @@ const calculators = {
       const debts = values.debts;
       const saving = values.saving;
 
-      if (income <= 0) return "رجاءً أدخل دخلاً صحيحاً أكبر من صفر.";
+      if(income <= 0) return "رجاءً أدخل دخلاً صحيحاً أكبر من صفر.";
 
-      const balance = income - expenses;
-      let result = `رصيدك الشهري بعد المصاريف: ${balance} ريال\n`;
+      let result = `رصيدك الشهري بعد المصاريف: ${income - expenses} ريال\n`;
 
-      if(balance < 0) result += "أنت تعيش على ديون أو مدين. حاول تخفيض مصاريفك.\n";
-      else if(balance === 0) result += "أنت تعيش على حدود دخلك، حاول الادخار ولو بالقليل.\n";
+      if(income - expenses < 0) result += "أنت تعيش على ديون أو مدين. حاول تخفيض مصاريفك.\n";
+      else if(income - expenses === 0) result += "أنت تعيش على حدود دخلك، حاول الادخار ولو بالقليل.\n";
       else result += "وضعك المالي جيد، لديك فائض يمكنك ادخاره أو استثماره.\n";
 
       if(debts === "نعم") result += "ركز على سداد ديونك بأسرع وقت ممكن.\n";
@@ -109,217 +112,185 @@ const calculators = {
       return result;
     }
   },
-
   "وظيفة": {
     title: "حاسبة وظيفة",
     fields: [
-      {label: "سنوات خبرتك في المجال", id: "experience", type: "number", min:0, placeholder:"مثال: 3"},
-      {label: "عدد المهارات المكتسبة", id: "skillsCount", type: "number", min:0, placeholder:"مثال: 5"},
       {label: "هل أنت راضٍ عن وظيفتك؟", id: "satisfied", type: "select", options:["نعم","لا"]},
-      {label: "هل تبحث عن عمل جديد؟", id: "looking", type: "select", options:["نعم","لا"]}
+      {label: "هل تبحث عن عمل جديد؟", id: "looking", type: "select", options:["نعم","لا"]},
+      {label: "هل لديك مهارات جديدة ترغب بتعلمها؟", id: "skills", type: "select", options:["نعم","لا"]},
+      {label: "هل تفكر في تغيير مجالك؟", id: "changeField", type: "select", options:["نعم","لا"]}
     ],
     calculate: function(values) {
-      const exp = Number(values.experience);
-      const skills = Number(values.skillsCount);
-      const satisfied = values.satisfied;
-      const looking = values.looking;
-
-      if(exp < 0 || skills < 0) return "الرجاء إدخال أرقام صحيحة لسنوات الخبرة وعدد المهارات.";
-
-      let score = exp * 2 + skills * 3;
-      let result = `تقييم مهني عام: ${score} نقطة.\n`;
-
-      if(satisfied === "لا" && looking === "نعم") {
-        result += "ننصحك بتحديث سيرتك الذاتية والبحث عن فرص جديدة.\n";
-      } else {
-        result += "استمر في تطوير مهاراتك ورفع مستوى خبرتك.\n";
-      }
-
-      if(score < 10) result += "حاول اكتساب مهارات وخبرات أكثر لتزيد فرصك.\n";
-      else if(score < 20) result += "أنت في منتصف الطريق، واصل التعلم.\n";
-      else result += "أداء مهني قوي، استمر في التطوير.\n";
-
-      return result;
+      let advice = "";
+      if(values.satisfied === "لا" && values.looking === "نعم") advice += "ابدأ بتحديث سيرتك الذاتية وابحث عن فرص عمل جديدة.\n";
+      if(values.skills === "نعم") advice += "التعلم المستمر يزيد فرصك للترقية أو عمل أفضل.\n";
+      if(values.changeField === "نعم") advice += "فكر جيدا قبل تغيير المجال، واستعد لتعلم مهارات جديدة.\n";
+      if(advice === "") advice = "استمر في تطوير مهاراتك وتحسين أدائك في عملك الحالي.";
+      return advice;
     }
   },
-
   "مشاريع": {
     title: "حاسبة مشاريع",
     fields: [
-      {label: "ميزانية المشروع (ريال)", id: "budget", type: "number", min:0, placeholder:"مثال: 10000"},
-      {label: "الأرباح المتوقعة (ريال)", id: "expectedProfit", type: "number", min:0, placeholder:"مثال: 15000"},
-      {label: "مدة المشروع بالأشهر", id: "duration", type: "number", min:1, placeholder:"مثال: 12"},
-      {label: "هل تعرف كيف تسوق لمنتجك؟", id: "marketing", type: "select", options:["نعم","لا"]}
+      {label: "هل لديك فكرة مشروع؟", id: "idea", type: "select", options:["نعم","لا"]},
+      {label: "هل ميزانيتك تسمح بالاستثمار؟", id: "budget", type: "select", options:["نعم","لا"]},
+      {label: "هل تعرف كيف تسوق لمنتجك؟", id: "marketing", type: "select", options:["نعم","لا"]},
+      {label: "هل لديك شركاء؟", id: "partners", type: "select", options:["نعم","لا"]}
     ],
     calculate: function(values) {
-      const budget = Number(values.budget);
-      const profit = Number(values.expectedProfit);
-      const duration = Number(values.duration);
-      const marketing = values.marketing;
-
-      if(budget <= 0 || profit < 0 || duration <= 0) return "الرجاء إدخال أرقام صحيحة.";
-
-      const profitability = ((profit - budget) / budget) * 100;
-      let result = `نسبة الربحية المتوقعة: ${profitability.toFixed(2)}%\n`;
-
-      if(profitability < 0) result += "المشروع قد يكون خاسر، راجع التكاليف والأرباح.\n";
-      else if(profitability < 20) result += "ربحية ضعيفة، حاول تحسين التسويق أو تقليل التكاليف.\n";
-      else result += "المشروع مربح، استمر في تطويره.\n";
-
-      if(marketing === "لا") result += "تعلم التسويق لزيادة فرص نجاح مشروعك.\n";
-
-      return result;
+      let advice = "";
+      if(values.idea === "لا") advice += "ابدأ بالبحث والتعلم عن المشاريع المناسبة لك.\n";
+      if(values.budget === "لا") advice += "حاول توفير رأس المال أو البحث عن شركاء.\n";
+      if(values.marketing === "لا") advice += "التسويق مفتاح نجاح مشروعك، فكر في طرق التسويق.\n";
+      if(values.partners === "لا") advice += "فكر في شركاء موثوقين لتشارك معهم المهام.\n";
+      if(advice === "") advice = "أنت على الطريق الصحيح، استمر بالتخطيط والتنفيذ.";
+      return advice;
     }
   },
-
   "إدارة أعمال": {
     title: "حاسبة إدارة أعمال",
     fields: [
-      {label: "عدد الموظفين", id: "employees", type: "number", min:0, placeholder:"مثال: 10"},
-      {label: "معدل الإنتاجية (%)", id: "productivity", type: "number", min:0, max:100, placeholder:"مثال: 75"},
-      {label: "نسبة إنجاز الأهداف (%)", id: "goalsCompletion", type: "number", min:0, max:100, placeholder:"مثال: 80"},
-      {label: "هل تستخدم أدوات إدارة؟", id: "tools", type: "select", options:["نعم","لا"]}
+      {label: "هل تدير فريق عمل؟", id: "manageTeam", type: "select", options:["نعم","لا"]},
+      {label: "هل تستخدم أدوات إدارة؟", id: "tools", type: "select", options:["نعم","لا"]},
+      {label: "هل تقوم بتقييم دوري؟", id: "evaluate", type: "select", options:["نعم","لا"]},
+      {label: "هل تخطط لأهداف؟", id: "planning", type: "select", options:["نعم","لا"]}
     ],
     calculate: function(values) {
-      const employees = Number(values.employees);
-      const productivity = Number(values.productivity);
-      const goals = Number(values.goalsCompletion);
-      const tools = values.tools;
-
-      if(employees < 0 || productivity < 0 || productivity > 100 || goals < 0 || goals > 100) return "الرجاء إدخال قيم صحيحة.";
-
-      let result = `تقييم الإدارة:\n- عدد الموظفين: ${employees}\n- الإنتاجية: ${productivity}%\n- نسبة إنجاز الأهداف: ${goals}%\n`;
-
-      if(tools === "لا") result += "استخدام أدوات إدارة يمكن أن يحسن الأداء.\n";
-
-      if(productivity < 50) result += "الإنتاجية منخفضة، حاول تحسين بيئة العمل.\n";
-      else if(productivity < 80) result += "الإنتاجية متوسطة، استمر في التحسين.\n";
-      else result += "الإنتاجية جيدة.\n";
-
-      if(goals < 50) result += "الأهداف غير مكتملة، ركز على التخطيط والمتابعة.\n";
-      else result += "الأهداف محققة بشكل جيد.\n";
-
-      return result;
+      let advice = "";
+      if(values.manageTeam === "لا") advice += "تعلم مهارات الإدارة حتى لو تعمل فردياً.\n";
+      if(values.tools === "لا") advice += "استخدم أدوات تنظيمية لتحسين الإنتاجية.\n";
+      if(values.evaluate === "لا") advice += "التقييم المستمر يساعد تطوير الأداء.\n";
+      if(values.planning === "لا") advice += "حدد أهداف واضحة لتحقيق النجاح.\n";
+      if(advice === "") advice = "إدارتك جيدة، واصل تطوير مهارات القيادة.";
+      return advice;
     }
   },
-
   "توفير": {
     title: "حاسبة توفير",
     fields: [
-      {label: "مبلغ الادخار الشهري (ريال)", id: "monthlySaving", type: "number", min:0, placeholder:"مثال: 500"},
       {label: "هل تراقب نفقاتك؟", id: "monitor", type: "select", options:["نعم","لا"]},
       {label: "هل تستخدم قائمة تسوق؟", id: "list", type: "select", options:["نعم","لا"]},
-      {label: "هل تستفيد من العروض؟", id: "discounts", type: "select", options:["نعم","لا"]}
+      {label: "هل تستفيد من العروض؟", id: "discounts", type: "select", options:["نعم","لا"]},
+      {label: "هل تقلل الاستهلاك؟", id: "reduce", type: "select", options:["نعم","لا"]}
     ],
     calculate: function(values) {
-      const saving = Number(values.monthlySaving);
-      const monitor = values.monitor;
-      const list = values.list;
-      const discounts = values.discounts;
-
-      if(saving < 0) return "الرجاء إدخال مبلغ ادخار صحيح.";
-
-      let result = `أنت تدخر شهرياً: ${saving} ريال.\n`;
-
-      if(monitor === "لا") result += "ابدأ بتسجيل نفقاتك لمعرفة مصاريفك.\n";
-      if(list === "لا") result += "استخدم قائمة تسوق لتجنب الشراء العشوائي.\n";
-      if(discounts === "لا") result += "استفد من العروض لتوفير المال.\n";
-
-      if(saving === 0) result += "ابدأ بادخار مبلغ حتى لو صغير.\n";
-      else result += "استمر في الادخار للحفاظ على أمان مالي.\n";
-
-      return result;
+      let advice = "";
+      if(values.monitor === "لا") advice += "ابدأ بتسجيل نفقاتك لمعرفة مصاريفك.\n";
+      if(values.list === "لا") advice += "استخدم قائمة تسوق لتجنب الشراء العشوائي.\n";
+      if(values.discounts === "لا") advice += "استفد من العروض لتوفير المال.\n";
+      if(values.reduce === "لا") advice += "قلل الاستهلاك غير الضروري.\n";
+      if(advice === "") advice = "عاداتك ممتازة، استمر في التوفير.";
+      return advice;
     }
   },
-
   "استثمار": {
     title: "حاسبة استثمار",
     fields: [
-      {label: "مبلغ الاستثمار (ريال)", id: "investmentAmount", type: "number", min:0, placeholder:"مثال: 10000"},
-      {label: "نسبة العائد المتوقع (%)", id: "expectedReturn", type: "number", min:0, max:100, placeholder:"مثال: 8"},
-      {label: "مدة الاستثمار (سنوات)", id: "investmentYears", type: "number", min:1, placeholder:"مثال: 5"},
-      {label: "هل تنوع استثماراتك؟", id: "diversify", type: "select", options:["نعم","لا"]}
+      {label: "هل لديك خبرة في الاستثمار؟", id: "experience", type: "select", options:["نعم","لا"]},
+      {label: "هل تعرف المخاطر التي تتحملها؟", id: "risk", type: "select", options:["نعم","لا"]},
+      {label: "هل تنوع استثماراتك؟", id: "diversify", type: "select", options:["نعم","لا"]},
+      {label: "هل تتابع أخبار الأسواق؟", id: "news", type: "select", options:["نعم","لا"]}
     ],
     calculate: function(values) {
-      const amount = Number(values.investmentAmount);
-      const rate = Number(values.expectedReturn) / 100;
-      const years = Number(values.investmentYears);
-      const diversify = values.diversify;
-
-      if(amount <= 0 || rate < 0 || years <= 0) return "الرجاء إدخال قيم صحيحة.";
-
-      // حساب الفائدة التراكمية سنوياً (بافتراض ربح مركب)
-      const futureValue = amount * Math.pow(1 + rate, years);
-
-      let result = `القيمة المتوقعة بعد ${years} سنوات: ${futureValue.toFixed(2)} ريال.\n`;
-
-      if(diversify === "لا") result += "تنويع الاستثمارات يقلل المخاطر، ننصح به.\n";
-
-      return result;
+      let advice = "";
+      if(values.experience === "لا") advice += "ابدأ بالتعلم قبل الاستثمار.\n";
+      if(values.risk === "لا") advice += "تعرف على المخاطر لتجنب خسائر.\n";
+      if(values.diversify === "لا") advice += "نوع استثماراتك لتقليل المخاطر.\n";
+      if(values.news === "لا") advice += "تابع أخبار الأسواق لاتخاذ قرارات أفضل.\n";
+      if(advice === "") advice = "أنت مستثمر حكيم، استمر في التطوير.";
+      return advice;
     }
   }
 };
 
-// استخراج نوع الحاسبة من الرابط
+// جلب نوع الحاسبة من الرابط
 function getQueryParam(param) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(param);
 }
 
-const type = getQueryParam('type') || 'مالية';
-const calc = calculators[type];
+const type = getQueryParam("type") || "مالية";
 
-// تعيين عنوان الصفحة
-document.getElementById('title').textContent = calc.title;
+const calcData = calculators[type];
+const calcTitle = document.getElementById("calcTitle");
+const calcForm = document.getElementById("calcForm");
+const resultDiv = document.getElementById("result");
 
-// بناء النموذج ديناميكياً
-const form = document.getElementById('calcForm');
-const resultDiv = document.getElementById('result');
+calcTitle.textContent = calcData.title;
 
-// إزالة الزر الأخير (إعادة إنشائه بعد إضافة الحقول)
-form.querySelector('button[type="submit"]').remove();
-
-calc.fields.forEach(f => {
-  let fieldHTML = '';
-  if(f.type === 'select') {
-    fieldHTML = `<label for="${f.id}">${f.label}</label>
-    <select id="${f.id}" required>
-      ${f.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-    </select>`;
-  } else {
-    fieldHTML = `<label for="${f.id}">${f.label}</label>
-    <input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}" ${f.min !== undefined ? 'min="'+f.min+'"' : ''} ${f.max !== undefined ? 'max="'+f.max+'"' : ''} required />`;
+// تحميل البيانات المحفوظة من التخزين المحلي
+function loadSavedData() {
+  const saved = localStorage.getItem("calcData_" + type);
+  if(saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return {};
+    }
   }
-  form.insertAdjacentHTML('beforeend', fieldHTML);
-});
+  return {};
+}
 
-// إعادة زر الحساب
-form.insertAdjacentHTML('beforeend', `<button type="submit">احسب</button>`);
+// حفظ البيانات في التخزين المحلي
+function saveData(data) {
+  localStorage.setItem("calcData_" + type, JSON.stringify(data));
+}
 
-form.addEventListener('submit', e => {
+// بناء النموذج ديناميكيًا
+function buildForm(data) {
+  calcForm.innerHTML = ""; // تنظيف النموذج
+
+  calcData.fields.forEach(field => {
+    let val = data[field.id] || "";
+    let fieldHtml = "";
+    if(field.type === "select") {
+      fieldHtml = `<label for="${field.id}">${field.label}</label>
+      <select id="${field.id}" required>
+        ${field.options.map(o => `<option value="${o}" ${val === o ? "selected" : ""}>${o}</option>`).join('')}
+      </select>`;
+    } else {
+      fieldHtml = `<label for="${field.id}">${field.label}</label>
+      <input type="${field.type}" id="${field.id}" placeholder="${field.placeholder || ""}" min="${field.min || 0}" value="${val}" required />`;
+    }
+    calcForm.insertAdjacentHTML("beforeend", fieldHtml);
+  });
+
+  calcForm.insertAdjacentHTML("beforeend", `<button type="submit">احسب</button>`);
+}
+
+// عرض النتيجة
+function showResult(text) {
+  resultDiv.textContent = text;
+}
+
+// التعامل مع إرسال النموذج
+calcForm.addEventListener("submit", e => {
   e.preventDefault();
   const values = {};
   let valid = true;
-
-  calc.fields.forEach(f => {
-    const val = document.getElementById(f.id).value;
-    if(!val) valid = false;
-    values[f.id] = val;
+  calcData.fields.forEach(field => {
+    const el = document.getElementById(field.id);
+    if(!el.value) valid = false;
+    values[field.id] = el.value;
   });
-
   if(!valid) {
-    resultDiv.textContent = "يرجى ملء جميع الحقول.";
+    showResult("يرجى ملء جميع الحقول.");
     return;
   }
-
-  const res = calc.calculate(values);
-  resultDiv.textContent = res;
+  const res = calcData.calculate(values);
+  showResult(res);
+  saveData(values);
 });
 
-// زر العودة
-function goBack() {
-  window.parent.document.getElementById('contentFrame').src = '';
-}
+// عند تحميل الصفحة
+window.onload = () => {
+  const savedData = loadSavedData();
+  buildForm(savedData);
+  if(Object.keys(savedData).length) {
+    const res = calcData.calculate(savedData);
+    showResult(res);
+  }
+};
 </script>
 
 </body>
