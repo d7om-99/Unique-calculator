@@ -11,6 +11,9 @@
     color: #eee;
     margin: 0; padding: 0;
     direction: rtl;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
   header {
     background: #009688;
@@ -18,26 +21,31 @@
     font-size: 1.6rem;
     text-align: center;
     font-weight: bold;
+    flex-shrink: 0;
   }
   #main {
     display: flex;
-    height: calc(100vh - 60px);
+    flex: 1;
+    overflow: hidden;
   }
   #sidebar {
-    width: 260px;
+    width: 280px;
     background: #222;
     padding: 15px;
     box-sizing: border-box;
     border-left: 3px solid #00bfa5;
+    display: flex;
+    flex-direction: column;
   }
   #sidebar h2 {
     text-align: center;
     margin-bottom: 20px;
+    font-size: 1.4rem;
   }
   #sidebar button {
     width: 100%;
-    margin: 10px 0;
-    padding: 12px;
+    margin: 8px 0;
+    padding: 14px;
     font-weight: bold;
     font-size: 1.1rem;
     border: none;
@@ -51,9 +59,31 @@
     background: #008f7a;
   }
   #contentFrame {
+    flex: 1;
     border: none;
-    width: 100%;
-    height: calc(100vh - 60px);
+    height: 100%;
+  }
+
+  /* متجاوب للهواتف */
+  @media (max-width: 768px) {
+    #main {
+      flex-direction: column;
+    }
+    #sidebar {
+      width: 100%;
+      border-left: none;
+      border-bottom: 3px solid #00bfa5;
+      flex-wrap: nowrap;
+      display: flex;
+      overflow-x: auto;
+    }
+    #sidebar button {
+      flex: 0 0 auto;
+      margin: 8px 5px;
+    }
+    #contentFrame {
+      height: 70vh;
+    }
   }
 </style>
 </head>
@@ -70,8 +100,8 @@
     <button onclick="openPage('calc.html?type=إدارة أعمال')">📊 حاسبة إدارة أعمال</button>
     <button onclick="openPage('calc.html?type=توفير')">💡 حاسبة توفير</button>
     <button onclick="openPage('calc.html?type=استثمار')">📉 حاسبة استثمار</button>
-    <button onclick="openPage('chat.html')">💬 شات ذكي</button>
-    <button onclick="openPage('challenges.html')">🏆 تحديات ومسابقات</button>
+    <button onclick="openPage('chatsmart.html')">💬 شات ذكي</button>
+    <button onclick="openPage('challenges.html')">🏆 التحديات والمسابقات</button>
   </nav>
   <iframe id="contentFrame" src="" allowfullscreen></iframe>
 </div>
