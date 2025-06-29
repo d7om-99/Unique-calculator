@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>تحديات ومسابقات - مساعد ذكي</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0; padding: 0;
+    direction: rtl;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    background: #009688;
+    padding: 15px;
+    font-size: 1.6rem;
+    text-align: center;
+    font-weight: bold;
+  }
+  main {
+    flex: 1;
+    padding: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .challenge-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .challenge-item {
+    background: #222;
+    border-radius: 10px;
+    padding: 15px;
+  }
+  .challenge-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+  .challenge-desc {
+    margin: 10px 0;
+    font-size: 1rem;
+  }
+  button.start-btn {
+    background: #00bfa5;
+    border: none;
+    color: #000;
+    padding: 10px 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button.start-btn:hover {
+    background: #008f7a;
+  }
+  /* التقدم */
+  .progress {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+  /* ميداليات */
+  .medals {
+    margin-top: 10px;
+  }
+  .medal {
+    display: inline-block;
+    background: gold;
+    color: black;
+    padding: 5px 12px;
+    border-radius: 15px;
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  /* نافذة التحدي */
+  #challengeArea {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 25px;
+    display: none;
+    flex-direction: column;
+  }
+  #challengeArea h3 {
+    margin-bottom: 10px;
+  }
+  #challengeContent {
+    margin-bottom: 15px;
+  }
+  #challengeQuestion {
+    background: #111;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  #challengeAnswer {
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+  }
+  button#submitAnswer {
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: #00bfa5;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+  }
+  button#submitAnswer:hover {
+    background: #008f7a;
+  }
+  #backToList {
+    margin-top: 20px;
+    background: #444;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #eee;
+    align-self: flex-start;
+  }
+  #backToList:hover {
+    background: #666;
+  }
+  /* لوحة المتصدرين */
+  #leaderboard {
+    margin-top: 25px;
+    background: #222;
+    border-radius: 10px;
+    padding: 15px;
+  }
+  #leaderboard h3 {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  #leaderboard ol {
+    padding-left: 20px;
+  }
+  #leaderboard li {
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+
+  /* تنبيهات */
+  #notifications {
+    background: #333;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #ffeb3b;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* متجاوب */
+  @media(max-width:600px) {
+    main {
+      padding: 10px;
+      margin: 0 5px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>🏆 تحديات ومسابقات - مساعد ذكي</header>
+<main>
+  <div id="notifications" style="display:none;"></div>
+  <h2>قائمة التحديات</h2>
+  <div class="challenge-list" id="challengeList">
+    <!-- تظهر التحديات هنا -->
+  </div>
+
+  <div id="challengeArea">
+    <h3 id="challengeTitle"></h3>
+    <div id="challengeContent"></div>
+    <div id="challengeQuestion"></div>
+    <input type="text" id="challengeAnswer" placeholder="اكتب جوابك هنا" autocomplete="off" />
+    <button id="submitAnswer">إرسال الجواب</button>
+    <button id="backToList">العودة لقائمة التحديات</button>
+  </div>
+
+  <div id="leaderboard">
+    <h3>لوحة المتصدرين</h3>
+    <ol id="leaderboardList"></ol>
+  </div>
+</main>
+
+<script>
+// بيانات التحديات
+const challenges = [
+  {
+    id: 'saving',
+    title: 'تحدي الادخار الشهري',
+    description: 'دوّن مصاريفك وقللها تدريجياً كل أسبوع.',
+    steps: [
+      {text: 'أسبوع 1: كم كان مجموع مصاريفك؟', check: val => !isNaN(parseFloat(val)) && parseFloat(val)>=0},
+      {text: 'أسبوع 2: هل حاولت تقليل المصاريف؟ (نعم/لا)', check: val => ['نعم','لا'].includes(val.trim().toLowerCase())},
+      {text: 'أسبوع 3: كم تمكنت من التوفير؟', check: val => !isNaN(parseFloat(val)) && parseFloat(val)>=0},
+      {text: 'أسبوع 4: هل حققت هدف الادخار؟ (نعم/لا)', check: val => ['نعم','لا'].includes(val.trim().toLowerCase())}
+    ],
+    reward: 'ميدالية الادخار'
+  },
+  {
+    id: 'skills',
+    title: 'تحدي تطوير المهارات',
+    description: 'أكمل سلسلة دروس وتمارين برمجية خلال فترة زمنية.',
+    steps: [
+      {text: 'كم درس برمجي أكملت؟', check: val => !isNaN(parseInt(val)) && parseInt(val)>=0},
+      {text: 'هل حاولت تطبيق ما تعلمته؟ (نعم/لا)', check: val => ['نعم','لا'].includes(val.trim().toLowerCase())},
+      {text: 'هل قمت بحل تمارين برمجية؟ (نعم/لا)', check: val => ['نعم','لا'].includes(val.trim().toLowerCase())},
+      {text: 'هل تشعر بتحسن في مهاراتك؟ (نعم/لا)', check: val => ['نعم','لا'].includes(val.trim().toLowerCase())}
+    ],
+    reward: 'ميدالية المهارات'
+  }
+];
+
+// حفظ وتحميل تقدم المستخدم من التخزين المحلي
+function saveProgress() {
+  localStorage.setItem('challengeProgress', JSON.stringify(challengeProgress));
+}
+function loadProgress() {
+  const data = localStorage.getItem('challengeProgress');
+  if(data) challengeProgress = JSON.parse(data);
+  else challengeProgress = {};
+}
+
+// التقدم الحالي للمستخدم
+let challengeProgress = {};
+loadProgress();
+
+// عرض التحديات
+const challengeListDiv = document.getElementById('challengeList');
+const challengeArea = document.getElementById('challengeArea');
+const challengeTitle = document.getElementById('challengeTitle');
+const challengeContent = document.getElementById('challengeContent');
+const challengeQuestion = document.getElementById('challengeQuestion');
+const challengeAnswer = document.getElementById('challengeAnswer');
+const submitAnswerBtn = document.getElementById('submitAnswer');
+const backToListBtn = document.getElementById('backToList');
+const notifications = document.getElementById('notifications');
+const leaderboardList = document.getElementById('leaderboardList');
+
+function renderChallenges() {
+  challengeListDiv.innerHTML = '';
+  challenges.forEach(ch => {
+    const progress = challengeProgress[ch.id] || {step: 0, done: false};
+    let status = progress.done ? '✅ تم الانتهاء' : `في الخطوة ${progress.step + 1} من ${ch.steps.length}`;
+    challengeListDiv.insertAdjacentHTML('beforeend', `
+      <div class="challenge-item">
+        <div class="challenge-title">${ch.title}</div>
+        <div class="challenge-desc">${ch.description}</div>
+        <div class="progress">الحالة: ${status}</div>
+        <div class="medals">${progress.done ? `<span class="medal">${ch.reward}</span>` : ''}</div>
+        <button class="start-btn" onclick="startChallenge('${ch.id}')">${progress.done ? 'إعادة التحدي' : 'ابدأ التحدي'}</button>
+      </div>
+    `);
+  });
+  renderLeaderboard();
+}
+
+// بدء تحدي
+let currentChallenge = null;
+function startChallenge(id) {
+  currentChallenge = challenges.find(ch => ch.id === id);
+  if(!currentChallenge) return;
+  challengeListDiv.style.display = 'none';
+  challengeArea.style.display = 'flex';
+  challengeTitle.textContent = currentChallenge.title;
+  challengeContent.textContent = currentChallenge.description;
+  showQuestion();
+}
+
+// عرض السؤال الحالي مع سؤال تحقق مفاجئ عشوائي أحياناً
+function showQuestion() {
+  const progress = challengeProgress[currentChallenge.id] || {step: 0, done: false};
+  const stepIndex = progress.step || 0;
+  if(stepIndex >= currentChallenge.steps.length) {
+    completeChallenge();
+    return;
+  }
+
+  // أسئلة تحقق عشوائية (30% احتمال)
+  if(Math.random() < 0.3) {
+    challengeQuestion.textContent = "سؤال تحقق: هل أنت متأكد من إجابتك؟ أعد التفكير قبل الإرسال.";
+  } else {
+    challengeQuestion.textContent = currentChallenge.steps[stepIndex].text;
+  }
+  challengeAnswer.value = '';
+  challengeAnswer.focus();
+}
+
+// إرسال جواب السؤال
+submitAnswerBtn.onclick = () => {
+  const val = challengeAnswer.value.trim();
+  if(!val) {
+    alert("الرجاء إدخال جواب.");
+    return;
+  }
+  const progress = challengeProgress[currentChallenge.id] || {step: 0, done: false};
+  const stepIndex = progress.step || 0;
+  if(!currentChallenge.steps[stepIndex].check(val)) {
+    alert("الجواب غير صحيح، حاول مرة أخرى.");
+    return;
+  }
+  // تحديث التقدم
+  challengeProgress[currentChallenge.id] = {step: stepIndex + 1, done: false};
+  saveProgress();
+
+  if(stepIndex + 1 >= currentChallenge.steps.length) {
+    completeChallenge();
+  } else {
+    showQuestion();
+  }
+}
+
+// إتمام التحدي ومنح ميدالية ونقاط
+function completeChallenge() {
+  challengeProgress[currentChallenge.id].done = true;
+  saveProgress();
+  showNotification(`🎉 تهانينا! أكملت تحدي "${currentChallenge.title}" وحصلت على ${currentChallenge.reward}`);
+  renderChallenges();
+  goBackToList();
+}
+
+// إشعار
+function showNotification(msg) {
+  notifications.textContent = msg;
+  notifications.style.display = 'block';
+  setTimeout(() => {
+    notifications.style.display = 'none';
+  }, 7000);
+}
+
+// العودة لقائمة التحديات
+backToListBtn.onclick = () => {
+  goBackToList();
+}
+
+function goBackToList() {
+  challengeArea.style.display = 'none';
+  challengeListDiv.style.display = 'flex';
+  currentChallenge = null;
+}
+
+// لوحة المتصدرين (حسب عدد التحديات المكتملة)
+function renderLeaderboard() {
+  let scores = [];
+  for(let ch of challenges) {
+    const prog = challengeProgress[ch.id];
+    if(prog && prog.done) {
+      scores.push({title: ch.title, points: 10, medal: ch.reward});
+    }
+  }
+  scores.sort((a,b) => b.points - a.points);
+
+  if(scores.length === 0) {
+    leaderboardList.innerHTML = "<li>لا يوجد متصدرين بعد.</li>";
+    return;
+  }
+  leaderboardList.innerHTML = '';
+  scores.forEach(s => {
+    leaderboardList.insertAdjacentHTML('beforeend', `<li>${s.title} - نقاط: ${s.points} - ${s.medal}</li>`);
+  });
+}
+
+renderChallenges();
+</script>
+
+</body>
+</html>
